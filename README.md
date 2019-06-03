@@ -15,7 +15,7 @@ http://www.phpaes.com/
 use Invoice\BlockChainData;
 
 //创建账本
-$BlockChain = new BlockChainData('BlockChain.dat','1393cac22549896bb792da0f4f00f6e2002c7e6d7b178f9277d2d9deceaef38e');
+$BlockChain = new BlockChainData('BlockChain.dat','KZanthicAtlxIMtgLdTWC07d02Nh3anK');
 
 //新增块
 for ($i = 0; $i < 10; $i++) {
