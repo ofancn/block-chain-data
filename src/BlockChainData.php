@@ -45,7 +45,7 @@ class BlockChainData
      */
     public function count()
     {
-        if (! file_exists($this->fn . '.idx'))
+        if (!file_exists($this->fn . '.idx'))
             return 0;
         return (filesize($this->fn . '.idx') - 4) / 8;
     }
@@ -57,7 +57,7 @@ class BlockChainData
      */
     public function getHash()
     {
-        if (! file_exists($this->fn))
+        if (!file_exists($this->fn))
             return null;
         return hash_file($this->_hashalg, $this->fn);
     }
@@ -70,7 +70,7 @@ class BlockChainData
      */
     public function verifyHash($hash)
     {
-        if (! file_exists($this->fn))
+        if (!file_exists($this->fn))
             return null;
         return hash_file($this->_hashalg, $this->fn) === $hash;
     }
@@ -90,17 +90,17 @@ class BlockChainData
     public function find($limit = 1, $offset = 0, $verify = true)
     {
         $fn = $this->fn . '.idx';
-        if (! file_exists($fn))
+        if (!file_exists($fn))
             return null;
         $fp = fopen($fn, 'rb');
         fseek($fp, 4 + ($offset * 8));
         $indexs = [];
         $id = $offset;
-        for ($i = 0; $i < $limit; $i ++) {
+        for ($i = 0; $i < $limit; $i++) {
             $ofs = unpack('V', fread($fp, 4))[1];
             $len = unpack('V', fread($fp, 4))[1] - $this->_blksize;
             $indexs[$ofs] = [
-                ++ $id,
+                ++$id,
                 $len
             ];
         }
@@ -118,7 +118,7 @@ class BlockChainData
      */
     public function findAll($verify = true)
     {
-        return $this->find($this->count());
+        return $this->find($this->count(), 0, $verify);
     }
 
     /**
@@ -133,14 +133,14 @@ class BlockChainData
         $data = $this->encrypt($data);
         $indexfn = $this->fn . '.idx';
         if (file_exists($this->fn)) {
-            if (! $ix = fopen($indexfn, 'r+b'))
+            if (!$ix = fopen($indexfn, 'r+b'))
                 throw new Exception("Can't open " . $indexfn);
             $maxblock = unpack('V', fread($ix, 4))[1];
             $zpos = (($maxblock * 8) - 4);
             fseek($ix, $zpos, SEEK_SET);
             $ofs = unpack('V', fread($ix, 4))[1];
             $len = unpack('V', fread($ix, 4))[1];
-            if (! $bc = fopen($this->fn, 'r+b'))
+            if (!$bc = fopen($this->fn, 'r+b'))
                 throw new Exception("Can't open " . $this->fn);
             fseek($bc, $ofs, SEEK_SET);
             $block = fread($bc, $len);
@@ -180,7 +180,7 @@ class BlockChainData
                 $version = ord($header[4]);
                 $timestamp = $this->unpack32($header, 5);
                 $prevhash = bin2hex(substr($header, 9, $this->_hashlen));
-                $datalen = $this->unpack32($header, - 4);
+                $datalen = $this->unpack32($header, -4);
                 $data = fread($fp, $datalen);
                 $hash = hash($this->_hashalg, $header . $data);
 
@@ -205,7 +205,7 @@ class BlockChainData
                         throw new Exception('Blockchain is destroyed');
                     }
                 }
-                $i ++;
+                $i++;
             }
         } catch (Throwable $e) {
             fclose($fp);
