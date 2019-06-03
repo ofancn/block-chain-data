@@ -1,0 +1,16 @@
+{
+    "name": "invoice/block-chain-data",
+    "description": "区块链账本",
+    "keywords": [
+        "BlockChain",
+        "Data"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Invoice\\": "src"
+        }
+    },
+    "require": {
+        "phpaes/phpaes": "^3.1"
+    }
+}
