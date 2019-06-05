@@ -1,7 +1,6 @@
 <?php
 namespace Invoice;
 
-use PhpAes\Aes;
 use Throwable;
 use Exception;
 
@@ -21,16 +20,14 @@ class BlockChainData
 
     protected $_blksize;
 
-    protected $_aes;
 
     /**
      * 账本文件路径
      *
      * @param string $fn
      */
-    public function __construct(string $fn, $z, $mode = 'ECB', $iv = null, $magic = 0xD5E8A97F, string $hashalg = 'sha256', int $hashlen = 32)
+    public function __construct(string $fn, $magic = 0xD5E8A97F, string $hashalg = 'sha256', int $hashlen = 32)
     {
-        $this->_aes = new Aes($z, $mode, $iv);
         $this->fn = $fn;
         $this->_magic = $magic;
         $this->_hashalg = $hashalg;
@@ -130,7 +127,6 @@ class BlockChainData
      */
     public function addBlock(string $data)
     {
-        $data = $this->encrypt($data);
         $indexfn = $this->fn . '.idx';
         if (file_exists($this->fn)) {
             if (!$ix = fopen($indexfn, 'r+b'))
@@ -197,7 +193,7 @@ class BlockChainData
                     'prevhash' => $prevhash,
                     'blockhash' => $hash,
                     'datalen' => $datalen,
-                    'data' => $this->decrypt($data)
+                    'data' => $data
                 ];
                 if ($verify && isset($block[$i - 1])) {
                     if ($block[$i]['prevhash'] !== $block[$i - 1]['blockhash']) {
@@ -238,15 +234,5 @@ class BlockChainData
     protected function unpack32($data, $ofs)
     {
         return unpack('V', substr($data, $ofs, 4))[1];
-    }
-
-    protected function decrypt($str)
-    {
-        return $this->_aes->decrypt($str);
-    }
-
-    protected function encrypt($str)
-    {
-        return $this->_aes->encrypt($str);
     }
 }
